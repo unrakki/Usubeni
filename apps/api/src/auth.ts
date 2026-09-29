@@ -16,7 +16,9 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
-        // Single-user: sign-up only exists to create the first account.
+        // Single-user: sign-up only exists to create the first account. This
+        // gives a clear error; the user_singleton trigger (migration 0002)
+        // covers concurrent sign-ups that both pass this check.
         before: async () => {
           if (hasUser()) {
             throw new APIError("FORBIDDEN", {
