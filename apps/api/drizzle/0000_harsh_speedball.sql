@@ -19,8 +19,10 @@ CREATE TABLE `item` (
 	`image` text NOT NULL,
 	`season_number` integer,
 	`episode_number` integer,
-	CONSTRAINT "item_season_numbering" CHECK("item"."media_type" <> 'season' OR ("item"."season_number" IS NOT NULL AND "item"."episode_number" IS NULL)),
-	CONSTRAINT "item_episode_numbering" CHECK("item"."media_type" <> 'episode' OR ("item"."season_number" IS NOT NULL AND "item"."episode_number" IS NOT NULL)),
+	CONSTRAINT "item_source_valid" CHECK("item"."source" IN ('tmdb', 'mal', 'mangaupdates', 'igdb', 'openlibrary', 'hardcover', 'comicvine', 'manual')),
+	CONSTRAINT "item_media_type_valid" CHECK("item"."media_type" IN ('tv', 'season', 'episode', 'movie', 'anime', 'manga', 'game', 'book', 'comic')),
+	CONSTRAINT "item_season_numbering" CHECK("item"."media_type" <> 'season' OR ("item"."season_number" IS NOT NULL AND "item"."season_number" >= 0 AND "item"."episode_number" IS NULL)),
+	CONSTRAINT "item_episode_numbering" CHECK("item"."media_type" <> 'episode' OR ("item"."season_number" IS NOT NULL AND "item"."season_number" >= 0 AND "item"."episode_number" IS NOT NULL AND "item"."episode_number" >= 1)),
 	CONSTRAINT "item_numbering_only_for_tv_parts" CHECK("item"."media_type" IN ('season', 'episode') OR ("item"."season_number" IS NULL AND "item"."episode_number" IS NULL))
 );
 --> statement-breakpoint
@@ -36,6 +38,8 @@ CREATE TABLE `item_link` (
 	`episode_start` integer,
 	`episode_end` integer,
 	FOREIGN KEY (`item_id`) REFERENCES `item`(`id`) ON UPDATE no action ON DELETE cascade,
+	CONSTRAINT "item_link_source_valid" CHECK("item_link"."source" IN ('mal', 'anilist')),
+	CONSTRAINT "item_link_season_non_negative" CHECK("item_link"."season_number" IS NULL OR "item_link"."season_number" >= 0),
 	CONSTRAINT "item_link_range_complete" CHECK(("item_link"."episode_start" IS NULL) = ("item_link"."episode_end" IS NULL)),
 	CONSTRAINT "item_link_range_needs_season" CHECK("item_link"."episode_start" IS NULL OR "item_link"."season_number" IS NOT NULL),
 	CONSTRAINT "item_link_range_order" CHECK("item_link"."episode_start" IS NULL OR ("item_link"."episode_start" >= 1 AND "item_link"."episode_end" >= "item_link"."episode_start"))
@@ -59,6 +63,7 @@ CREATE TABLE `media` (
 	FOREIGN KEY (`item_id`) REFERENCES `item`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`parent_id`) REFERENCES `media`(`id`) ON UPDATE no action ON DELETE cascade,
 	CONSTRAINT "media_score_range" CHECK("media"."score" IS NULL OR "media"."score" BETWEEN 0 AND 10),
+	CONSTRAINT "media_status_valid" CHECK("media"."status" IN ('Completed', 'In progress', 'Planning', 'Paused', 'Dropped')),
 	CONSTRAINT "media_progress_non_negative" CHECK("media"."progress" >= 0)
 );
 --> statement-breakpoint

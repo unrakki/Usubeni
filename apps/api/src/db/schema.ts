@@ -44,6 +44,11 @@ export const STATUSES = [
 
 export const LINK_SOURCES = ["mal", "anilist"] as const;
 
+// Drizzle's text enums only type the column; this makes SQLite reject other values
+// too. Values are the constants above, so inlining them is safe.
+const isOneOf = (column: AnySQLiteColumn, values: readonly string[]) =>
+  sql`${column} IN (${sql.raw(values.map((v) => `'${v}'`).join(", "))})`;
+
 export const item = sqliteTable(
   "item",
   {
@@ -68,13 +73,17 @@ export const item = sqliteTable(
       .where(
         sql`${t.seasonNumber} IS NOT NULL AND ${t.episodeNumber} IS NOT NULL`,
       ),
+    check("item_source_valid", isOneOf(t.source, SOURCES)),
+    check("item_media_type_valid", isOneOf(t.mediaType, MEDIA_TYPES)),
+    // Season 0 is TMDB's specials season. IS NOT NULL is needed because a CHECK
+    // that evaluates to NULL passes.
     check(
       "item_season_numbering",
-      sql`${t.mediaType} <> 'season' OR (${t.seasonNumber} IS NOT NULL AND ${t.episodeNumber} IS NULL)`,
+      sql`${t.mediaType} <> 'season' OR (${t.seasonNumber} IS NOT NULL AND ${t.seasonNumber} >= 0 AND ${t.episodeNumber} IS NULL)`,
     ),
     check(
       "item_episode_numbering",
-      sql`${t.mediaType} <> 'episode' OR (${t.seasonNumber} IS NOT NULL AND ${t.episodeNumber} IS NOT NULL)`,
+      sql`${t.mediaType} <> 'episode' OR (${t.seasonNumber} IS NOT NULL AND ${t.seasonNumber} >= 0 AND ${t.episodeNumber} IS NOT NULL AND ${t.episodeNumber} >= 1)`,
     ),
     check(
       "item_numbering_only_for_tv_parts",
@@ -113,6 +122,11 @@ export const itemLink = sqliteTable(
       .on(t.source, t.mediaId, t.itemId, t.seasonNumber, t.episodeStart)
       .where(sql`${t.episodeStart} IS NOT NULL`),
     index("item_link_item_id_idx").on(t.itemId),
+    check("item_link_source_valid", isOneOf(t.source, LINK_SOURCES)),
+    check(
+      "item_link_season_non_negative",
+      sql`${t.seasonNumber} IS NULL OR ${t.seasonNumber} >= 0`,
+    ),
     check(
       "item_link_range_complete",
       sql`(${t.episodeStart} IS NULL) = (${t.episodeEnd} IS NULL)`,
@@ -157,6 +171,7 @@ export const media = sqliteTable(
       "media_score_range",
       sql`${t.score} IS NULL OR ${t.score} BETWEEN 0 AND 10`,
     ),
+    check("media_status_valid", isOneOf(t.status, STATUSES)),
     check("media_progress_non_negative", sql`${t.progress} >= 0`),
   ],
 );
