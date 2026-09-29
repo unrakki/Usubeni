@@ -42,3 +42,4 @@ From `apps/api`:
 | Command               | Description                                     |
 | --------------------- | ----------------------------------------------- |
 | `bun run db:generate` | Generate SQL migrations from `src/db/schema.ts` |
+| `bun run db:migrate`  | Apply pending migrations to `db.sqlite`         |
