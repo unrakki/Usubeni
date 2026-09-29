@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+
+# Env
+.env
+.env.*
+!.env.example
+
+# SQLite
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Build
+dist
+
+# Turbo
+.turbo
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Misc
+*.local
+.DS_Store
+*.log
