@@ -3,11 +3,11 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "turbo-init",
+      "name": "usubeni",
       "devDependencies": {
-        "oxlint": "^1.86.0",
-        "prettier": "3.9.6",
-        "turbo": "^2.11.5",
+        "oxlint": "1.86.0",
+        "prettier": "3.9.9",
+        "turbo": "2.11.5",
         "typescript": "7.0.2",
       },
     },
@@ -15,37 +15,37 @@
       "name": "@usubeni/api",
       "version": "0.0.0",
       "dependencies": {
-        "@sinclair/typebox": "^0.34.52",
-        "better-auth": "^1.7.6",
-        "bullmq": "^6.3.10",
-        "drizzle-orm": "^0.45.3",
-        "elysia": "^1.4.30",
+        "@sinclair/typebox": "0.34.52",
+        "better-auth": "1.7.6",
+        "bullmq": "6.3.10",
+        "drizzle-orm": "0.45.3",
+        "elysia": "1.4.30",
       },
       "devDependencies": {
-        "bun-types": "^1.4.2",
-        "drizzle-kit": "^0.31.11",
+        "bun-types": "1.4.2",
+        "drizzle-kit": "0.31.11",
       },
     },
     "apps/web": {
       "name": "@usubeni/web",
       "version": "0.0.0",
       "dependencies": {
-        "@elysiajs/eden": "^1.4.9",
-        "@tanstack/react-query": "^5.104.0",
+        "@elysiajs/eden": "1.4.9",
+        "@tanstack/react-query": "5.104.0",
         "@usubeni/shared": "workspace:*",
-        "elysia": "^1.4.30",
-        "react": "^19.2.8",
-        "react-dom": "^19.2.8",
+        "elysia": "1.4.30",
+        "react": "19.3.0",
+        "react-dom": "19.3.0",
       },
       "devDependencies": {
-        "@tailwindcss/vite": "^4.3.3",
-        "@types/node": "^24.13.3",
-        "@types/react": "^19.2.18",
-        "@types/react-dom": "^19.2.7",
-        "@vitejs/plugin-react": "^6.1.1",
-        "tailwindcss": "^4.3.3",
+        "@tailwindcss/vite": "4.3.3",
+        "@types/node": "24.19.0",
+        "@types/react": "19.3.0",
+        "@types/react-dom": "19.3.0",
+        "@vitejs/plugin-react": "6.1.1",
+        "tailwindcss": "4.3.3",
         "typescript": "7.0.2",
-        "vite": "^8.3.0",
+        "vite": "8.3.1",
       },
     },
     "packages/shared": {
@@ -55,7 +55,7 @@
         "@usubeni/api": "workspace:*",
       },
       "devDependencies": {
-        "bun-types": "^1.4.2",
+        "bun-types": "1.4.2",
       },
     },
   },
@@ -456,7 +456,7 @@
 
     "postcss": ["postcss@8.5.28", "", { "dependencies": { "nanoid": "^3.3.18", "picocolors": "^1.1.1", "source-map-js": "^1.2.1" } }, "sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A=="],
 
-    "prettier": ["prettier@3.9.6", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-OpN0zzVdiaiAhxpuuj5efpIS4sY9j7bY6uR5mnj5yPzGkdkjNKSJeUThPb60Jw29QuAZgA4o+/iB49kFiaBX6g=="],
+    "prettier": ["prettier@3.9.9", "", { "bin": { "prettier": "bin/prettier.cjs" } }, "sha512-Z/CJHIkdujO/OtN7nXUii0Rf3VT5SRuhjBA82Xvu2XhBUgX3nhP67T0LHceBdQLex7OOFGTox+Q5Yg8Jk2Qivg=="],
 
     "react": ["react@19.3.0", "", {}, "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog=="],
 
