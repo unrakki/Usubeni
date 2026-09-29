@@ -21,9 +21,12 @@ Validation uses TypeBox (`t` from Elysia).
 
 ```sh
 bun install
-cp .env.example .env
+cp .env.example .env   # then set BETTER_AUTH_SECRET
 docker compose up -d
+(cd apps/api && bun run db:migrate)
 ```
+
+On first launch the web app asks you to create the account. Sign-up closes once it exists.
 
 ## Scripts
 

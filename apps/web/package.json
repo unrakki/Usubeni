@@ -12,6 +12,7 @@
   "dependencies": {
     "@elysiajs/eden": "1.4.9",
     "@usubeni/shared": "workspace:*",
+    "better-auth": "1.7.6",
     "@tanstack/react-query": "5.104.0",
     "elysia": "1.4.30",
     "react": "19.3.0",
