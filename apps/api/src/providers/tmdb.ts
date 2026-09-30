@@ -59,14 +59,28 @@ async function request<T>(
     ...params,
   }).toString();
 
-  const response = await fetch(url);
+  let response: Response;
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    // Network failure: TMDB unreachable, DNS, TLS, reset connection.
+    throw new ProviderError(
+      `TMDB request failed: ${error instanceof Error ? error.message : String(error)}`,
+      502,
+      error,
+    );
+  }
   if (response.status === 404) {
     throw new ProviderError("Not found on TMDB", 404);
   }
   if (!response.ok) {
     throw new ProviderError(`TMDB responded with ${response.status}`, 502);
   }
-  return (await response.json()) as T;
+  try {
+    return (await response.json()) as T;
+  } catch (error) {
+    throw new ProviderError("TMDB returned a malformed response", 502, error);
+  }
 }
 
 // No poster is null on TMDB; item.image is required, so use an empty string.

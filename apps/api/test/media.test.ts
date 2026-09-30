@@ -32,6 +32,16 @@ const fetchSpy = spyOn(globalThis, "fetch").mockImplementation((async (
     });
   }
   if (url.pathname === "/3/movie/603") return Response.json(matrix);
+  // Fictional ids simulating provider failures.
+  if (url.pathname === "/3/movie/offline") {
+    throw new TypeError("Unable to connect");
+  }
+  if (url.pathname === "/3/movie/malformed") {
+    return new Response("<html>maintenance</html>");
+  }
+  if (url.pathname === "/3/movie/down") {
+    return new Response("Internal error", { status: 500 });
+  }
   return new Response("Not found", { status: 404 });
 }) as typeof fetch);
 
@@ -211,6 +221,25 @@ describe("movies", () => {
       status: "Planning",
     });
     expect(response.status).toBe(404);
+  });
+
+  test("TMDB failures answer 502 with the reason", async () => {
+    const detail = async (mediaId: string) => {
+      const response = await call("GET", `/media/tmdb/movie/${mediaId}`);
+      return { status: response.status, ...(await response.json()) };
+    };
+    expect(await detail("offline")).toEqual({
+      status: 502,
+      message: "TMDB request failed: Unable to connect",
+    });
+    expect(await detail("malformed")).toEqual({
+      status: 502,
+      message: "TMDB returned a malformed response",
+    });
+    expect(await detail("down")).toEqual({
+      status: 502,
+      message: "TMDB responded with 500",
+    });
   });
 
   test("adding requires a status", async () => {

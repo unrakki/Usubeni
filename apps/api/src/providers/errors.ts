@@ -2,8 +2,8 @@
 export class ProviderError extends Error {
   readonly status: 404 | 502 | 503;
 
-  constructor(message: string, status: 404 | 502 | 503) {
-    super(message);
+  constructor(message: string, status: 404 | 502 | 503, cause?: unknown) {
+    super(message, { cause });
     this.status = status;
   }
 
