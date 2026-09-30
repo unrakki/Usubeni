@@ -5,8 +5,7 @@ Bun.env.BETTER_AUTH_SECRET = "test-secret-at-least-32-characters-long";
 Bun.env.BETTER_AUTH_URL = "http://localhost:5173";
 Bun.env.TMDB_API = "test-key";
 
-const { join } = await import("node:path");
-const { migrate } = await import("drizzle-orm/bun-sqlite/migrator");
 const { db } = await import("../src/db/index.ts");
+const { runMigrations } = await import("../src/db/migrations.ts");
 
-migrate(db, { migrationsFolder: join(import.meta.dir, "..", "drizzle") });
+runMigrations(db);

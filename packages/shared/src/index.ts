@@ -1,2 +1,2 @@
 export type { App } from "@usubeni/api";
-export { STATUSES } from "@usubeni/api/constants";
+export { statusesFor } from "@usubeni/api/constants";
