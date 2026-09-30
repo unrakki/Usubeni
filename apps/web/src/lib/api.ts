@@ -1,5 +1,6 @@
 import { treaty } from "@elysiajs/eden";
 import type { App, statusesFor } from "@usubeni/shared";
+import i18n from "./i18n.ts";
 
 // The API is served under /api on the same origin (Vite proxies it in dev).
 // parseDate is off: Eden would turn any date-looking string into a Date,
@@ -50,5 +51,8 @@ export function fromDateInput(value: string) {
 export function errorMessage(error: unknown) {
   // Eden errors carry the response body in `value`.
   const value = (error as { value?: { message?: string } }).value;
-  return value?.message ?? (error instanceof Error ? error.message : "Error");
+  return (
+    value?.message ??
+    (error instanceof Error ? error.message : i18n.t("common.error"))
+  );
 }

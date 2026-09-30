@@ -1,18 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import AddButton from "./AddButton.tsx";
 import EntryControls from "./EntryControls.tsx";
 import Poster from "./Poster.tsx";
 import { api, errorMessage, unwrap } from "./lib/api.ts";
 
 function ShowPage() {
+  const { t } = useTranslation();
   const { mediaId } = useParams({ from: "/tv/$mediaId" });
   const show = useQuery({
     queryKey: ["show", mediaId],
     queryFn: () => unwrap(api.media.tmdb.tv({ mediaId }).get()),
   });
 
-  if (show.isPending) return <p>Loading…</p>;
+  if (show.isPending) return <p>{t("common.loading")}</p>;
   if (show.isError) {
     return (
       <p role="alert" className="text-red-600">
@@ -49,7 +51,7 @@ function ShowPage() {
       </header>
 
       <section className="space-y-2">
-        <h3 className="text-lg font-semibold">Seasons</h3>
+        <h3 className="text-lg font-semibold">{t("show.seasons")}</h3>
         <ul className="divide-y divide-neutral-200 dark:divide-neutral-800">
           {data.seasons.map((season) => (
             <li
@@ -65,12 +67,16 @@ function ShowPage() {
               </Link>
               <span className="text-neutral-500">
                 {season.airedEpisodeCount < season.episodeCount
-                  ? `${season.airedEpisodeCount}/${season.episodeCount} aired`
-                  : `${season.episodeCount} episodes`}
+                  ? t("show.airedCount", {
+                      aired: season.airedEpisodeCount,
+                      total: season.episodeCount,
+                    })
+                  : t("show.episodeCount", { count: season.episodeCount })}
               </span>
               {season.entry && (
                 <span className="ml-auto text-neutral-500">
-                  {season.entry.status} · {season.entry.progress} watched
+                  {t(`status.${season.entry.status}`)} ·{" "}
+                  {t("show.watchedCount", { count: season.entry.progress })}
                 </span>
               )}
             </li>

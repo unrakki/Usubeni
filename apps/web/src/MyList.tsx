@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { statusesFor } from "@usubeni/shared";
+import { useTranslation } from "react-i18next";
 import EntryControls from "./EntryControls.tsx";
 import Poster from "./Poster.tsx";
 import TypeTabs from "./TypeTabs.tsx";
@@ -14,6 +15,7 @@ import {
 import { fieldClass } from "./lib/ui.ts";
 
 function MyList() {
+  const { t } = useTranslation();
   const { type, status } = useSearch({ from: "/list" });
   const navigate = useNavigate({ from: "/list" });
   const entries = useQuery({
@@ -38,25 +40,25 @@ function MyList() {
               },
             })
           }
-          aria-label="Filter by status"
+          aria-label={t("list.filterByStatus")}
           className={fieldClass}
         >
-          <option value="">All statuses</option>
+          <option value="">{t("list.allStatuses")}</option>
           {statusesFor(type).map((value) => (
-            <option key={value}>{value}</option>
+            <option key={value} value={value}>
+              {t(`status.${value}`)}
+            </option>
           ))}
         </select>
       </div>
 
-      {entries.isPending && <p>Loading…</p>}
+      {entries.isPending && <p>{t("common.loading")}</p>}
       {entries.isError && (
         <p role="alert" className="text-red-600">
           {errorMessage(entries.error)}
         </p>
       )}
-      {entries.data?.length === 0 && (
-        <p>Nothing here yet. Use Search to add some.</p>
-      )}
+      {entries.data?.length === 0 && <p>{t("list.empty")}</p>}
 
       <ul className="space-y-3">
         {entries.data?.map((entry) => (
