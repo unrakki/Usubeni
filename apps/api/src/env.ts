@@ -12,4 +12,7 @@ function required(name: string): string {
 export const env = {
   BETTER_AUTH_SECRET: required("BETTER_AUTH_SECRET"),
   BETTER_AUTH_URL: required("BETTER_AUTH_URL"),
+  // Metadata keys are optional so the app runs with only the sources you use.
+  TMDB_API: Bun.env.TMDB_API || undefined,
+  TMDB_LANG: Bun.env.TMDB_LANG || "en-US",
 };

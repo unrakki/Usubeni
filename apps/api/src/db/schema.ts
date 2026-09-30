@@ -9,43 +9,10 @@ import {
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
-
-// Values mirror Yamtrack so its CSV exports import as-is.
-export const SOURCES = [
-  "tmdb",
-  "mal",
-  "mangaupdates",
-  "igdb",
-  "openlibrary",
-  "hardcover",
-  "comicvine",
-  "manual",
-] as const;
-
-export const MEDIA_TYPES = [
-  "tv",
-  "season",
-  "episode",
-  "movie",
-  "anime",
-  "manga",
-  "game",
-  "book",
-  "comic",
-] as const;
-
-export const STATUSES = [
-  "Completed",
-  "In progress",
-  "Planning",
-  "Paused",
-  "Dropped",
-] as const;
-
-export const LINK_SOURCES = ["mal", "anilist"] as const;
+import { LINK_SOURCES, MEDIA_TYPES, SOURCES, STATUSES } from "./constants.ts";
 
 // Drizzle's text enums only type the column; this makes SQLite reject other values
-// too. Values are the constants above, so inlining them is safe.
+// too. Values come from constants.ts, so inlining them is safe.
 const isOneOf = (column: AnySQLiteColumn, values: readonly string[]) =>
   sql`${column} IN (${sql.raw(values.map((v) => `'${v}'`).join(", "))})`;
 

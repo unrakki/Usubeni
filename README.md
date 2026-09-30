@@ -37,6 +37,7 @@ Run from the repository root:
 | `bun run dev`         | API on http://localhost:3000, web on http://localhost:5173 |
 | `bun run build`       | Build all workspaces                                       |
 | `bun run check-types` | Type-check all workspaces                                  |
+| `bun run test`        | Run the test suites                                        |
 | `bun run lint`        | Lint with oxlint                                           |
 | `bun run format`      | Format with Prettier                                       |
 
