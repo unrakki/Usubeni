@@ -73,6 +73,8 @@ function SeasonPage() {
         {data.episodes.map((episode) => {
           const watched = episode.viewings.length > 0;
           const last = episode.viewings.at(-1);
+          // Matches the API: dated episodes can't be watched before they air.
+          const upcoming = episode.airDate !== null && !episode.aired;
           return (
             <li
               key={episode.episodeNumber}
@@ -81,7 +83,7 @@ function SeasonPage() {
               <input
                 type="checkbox"
                 checked={watched}
-                disabled={busy}
+                disabled={busy || (upcoming && !watched)}
                 onChange={() =>
                   watched
                     ? unwatch.mutate(episode.episodeNumber)

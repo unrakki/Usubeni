@@ -141,6 +141,26 @@ describe("showStatus", () => {
   });
 });
 
+describe("with nothing watched", () => {
+  test("derived statuses fall back to in progress", () => {
+    const counts = { watched: 0, aired: 8, total: 8 };
+    expect(seasonStatus("Completed", counts)).toBe("In progress");
+    expect(seasonStatus("Caught up", counts)).toBe("In progress");
+    expect(showStatus("Completed", { watched: 0, aired: 8, ended: true })).toBe(
+      "In progress",
+    );
+  });
+
+  test("statuses the user picked stay", () => {
+    const counts = { watched: 0, aired: 8, total: 8 };
+    expect(seasonStatus("Paused", counts)).toBe("Paused");
+    expect(seasonStatus("Dropped", counts)).toBe("Dropped");
+    expect(showStatus("Planning", { watched: 0, aired: 8, ended: false })).toBe(
+      "Planning",
+    );
+  });
+});
+
 describe("refreshCaughtUp", () => {
   test("only moves caught-up entries", () => {
     expect(refreshCaughtUp("Caught up", "In progress")).toBe("In progress");

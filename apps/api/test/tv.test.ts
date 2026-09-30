@@ -113,6 +113,12 @@ describe("tv shows", () => {
     expect(statusOf(data, 0)).toBeNull();
   });
 
+  test("an episode can't be watched before it airs", async () => {
+    // Still October 2012: the second half of season 5 airs in 2013.
+    const response = await call("POST", `${SHOW}/season/5/episode/9/watch`);
+    expect(response.status).toBe(422);
+  });
+
   test("new episodes move caught-up entries back to in progress", async () => {
     at("2013-08-20");
     const data = await show();

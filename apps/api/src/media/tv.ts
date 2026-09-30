@@ -358,6 +358,11 @@ export async function watchEpisode(
   ]);
   const ep = season.episodes.find((e) => e.episodeNumber === episodeNumber);
   if (!ep) throw new HttpError(404, "Episode not found on TMDB");
+  // Progress and statuses count aired episodes. An episode without an air
+  // date stays watchable: TMDB lacks dates for some old, aired episodes.
+  if (ep.airDate !== null && !ep.aired) {
+    throw new HttpError(422, "This episode hasn't aired yet");
+  }
 
   db.transaction(() => {
     // The show and season entries are created on the first episode watched.

@@ -49,9 +49,14 @@ export interface SeasonCounts {
   total: number;
 }
 
+// With nothing watched, statuses derived from watching no longer hold; the
+// ones the user picked (Planning, Paused, Dropped) stay.
+const withNothingWatched = (current: Status): Status =>
+  current === "Completed" || current === "Caught up" ? "In progress" : current;
+
 // Status a season takes after an episode is watched or unwatched.
 export function seasonStatus(current: Status, counts: SeasonCounts): Status {
-  if (counts.watched === 0) return current;
+  if (counts.watched === 0) return withNothingWatched(current);
   if (counts.total > 0 && counts.watched >= counts.total) return "Completed";
   if (counts.watched >= counts.aired) return "Caught up";
   return "In progress";
@@ -66,7 +71,7 @@ export interface ShowCounts {
 
 // Status a show takes after one of its episodes is watched or unwatched.
 export function showStatus(current: Status, counts: ShowCounts): Status {
-  if (counts.watched === 0) return current;
+  if (counts.watched === 0) return withNothingWatched(current);
   if (counts.watched >= counts.aired) {
     return counts.ended ? "Completed" : "Caught up";
   }
