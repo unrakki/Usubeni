@@ -1,8 +1,7 @@
-import { afterAll, beforeAll, describe, expect, spyOn, test } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { app } from "../src/app.ts";
 import { env } from "../src/env.ts";
-
-const ORIGIN = "http://localhost:5173";
+import { call, tmdbRoutes } from "./helpers.ts";
 
 const matrix = {
   id: 603,
@@ -16,65 +15,26 @@ const matrix = {
   status: "Released",
 };
 
-// Stand-in for TMDB: only the endpoints the provider calls.
-const fetchSpy = spyOn(globalThis, "fetch").mockImplementation((async (
-  input: string | URL | Request,
-) => {
-  const url = new URL(input instanceof Request ? input.url : String(input));
-  if (url.pathname === "/3/search/movie") {
-    return Response.json({
-      page: 1,
-      total_pages: 1,
-      results: [
-        { ...matrix },
-        { id: 604, title: "Reloaded", poster_path: null },
-      ],
-    });
-  }
-  if (url.pathname === "/3/movie/603") return Response.json(matrix);
-  // Fictional ids simulating provider failures.
-  if (url.pathname === "/3/movie/offline") {
-    throw new TypeError("Unable to connect");
-  }
-  if (url.pathname === "/3/movie/malformed") {
-    return new Response("<html>maintenance</html>");
-  }
-  if (url.pathname === "/3/movie/down") {
-    return new Response("Internal error", { status: 500 });
-  }
-  return new Response("Not found", { status: 404 });
-}) as typeof fetch);
-
-afterAll(() => fetchSpy.mockRestore());
-
-let cookie = "";
-
-function call(method: string, path: string, body?: unknown) {
-  return app.handle(
-    new Request(`http://localhost/api${path}`, {
-      method,
-      headers: {
-        cookie,
-        origin: ORIGIN,
-        ...(body === undefined ? {} : { "content-type": "application/json" }),
-      },
-      body: body === undefined ? undefined : JSON.stringify(body),
-    }),
-  );
-}
-
-beforeAll(async () => {
-  const response = await call("POST", "/auth/sign-up/email", {
-    name: "Test",
-    email: "test@example.com",
-    password: "password123",
-  });
-  expect(response.status).toBe(200);
-  cookie = response.headers
-    .getSetCookie()
-    .map((c) => c.split(";")[0])
-    .join("; ");
+tmdbRoutes.set("/3/search/movie", () =>
+  Response.json({
+    page: 1,
+    total_pages: 1,
+    results: [{ ...matrix }, { id: 604, title: "Reloaded", poster_path: null }],
+  }),
+);
+tmdbRoutes.set("/3/movie/603", () => Response.json(matrix));
+// Fictional ids simulating provider failures.
+tmdbRoutes.set("/3/movie/offline", () => {
+  throw new TypeError("Unable to connect");
 });
+tmdbRoutes.set(
+  "/3/movie/malformed",
+  () => new Response("<html>maintenance</html>"),
+);
+tmdbRoutes.set(
+  "/3/movie/down",
+  () => new Response("Internal error", { status: 500 }),
+);
 
 describe("auth guard", () => {
   test("rejects requests without a session", async () => {
@@ -240,6 +200,16 @@ describe("movies", () => {
       status: 502,
       message: "TMDB responded with 500",
     });
+  });
+
+  test("a movie can't be caught up", async () => {
+    const response = await call("POST", "/media", {
+      source: "tmdb",
+      mediaType: "movie",
+      mediaId: "603",
+      status: "Caught up",
+    });
+    expect(response.status).toBe(422);
   });
 
   test("adding requires a status", async () => {

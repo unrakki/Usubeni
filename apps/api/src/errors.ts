@@ -1,8 +1,8 @@
 // Elysia turns any thrown error with toResponse() into that response.
-export class ProviderError extends Error {
-  readonly status: 404 | 502 | 503;
+export class HttpError extends Error {
+  readonly status: number;
 
-  constructor(message: string, status: 404 | 502 | 503, cause?: unknown) {
+  constructor(status: number, message: string, cause?: unknown) {
     super(message, { cause });
     this.status = status;
   }

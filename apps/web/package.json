@@ -11,9 +11,10 @@
   },
   "dependencies": {
     "@elysiajs/eden": "1.4.9",
+    "@tanstack/react-query": "5.104.0",
+    "@tanstack/react-router": "1.170.40",
     "@usubeni/shared": "workspace:*",
     "better-auth": "1.7.6",
-    "@tanstack/react-query": "5.104.0",
     "elysia": "1.4.30",
     "react": "19.3.0",
     "react-dom": "19.3.0"
