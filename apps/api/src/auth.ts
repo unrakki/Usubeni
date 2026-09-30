@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { APIError } from "better-auth/api";
+import { Elysia } from "elysia";
 import { user } from "./db/auth-schema.ts";
 import { db } from "./db/index.ts";
 import { env } from "./env.ts";
@@ -27,6 +28,17 @@ export const auth = betterAuth({
           }
         },
       },
+    },
+  },
+});
+
+// Routes opt in with `{ auth: true }` and get `user` and `session` in context.
+export const authGuard = new Elysia({ name: "auth-guard" }).macro({
+  auth: {
+    async resolve({ status, request: { headers } }) {
+      const session = await auth.api.getSession({ headers });
+      if (!session) return status(401, { message: "Unauthorized" });
+      return { user: session.user, session: session.session };
     },
   },
 });
