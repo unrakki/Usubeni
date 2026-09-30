@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { statusesFor } from "@usubeni/shared";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   api,
   type Entry,
@@ -21,6 +22,7 @@ type EntryFields = Pick<
 // Status, score, dates and delete for one tracking entry. Shows and seasons
 // derive progress and dates from watched episodes, so those are read-only.
 function EntryControls({ entry }: { entry: EntryFields }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   // Any change can cascade (a season completing its show), so refresh all.
@@ -41,7 +43,7 @@ function EntryControls({ entry }: { entry: EntryFields }) {
   return (
     <div className="flex flex-1 flex-wrap items-end gap-3 text-sm">
       <label className="space-y-1">
-        <span className="block text-neutral-500">Status</span>
+        <span className="block text-neutral-500">{t("common.status")}</span>
         <select
           value={entry.status}
           onChange={(event) =>
@@ -50,12 +52,14 @@ function EntryControls({ entry }: { entry: EntryFields }) {
           className={fieldClass}
         >
           {statusesFor(entry.item.mediaType).map((value) => (
-            <option key={value}>{value}</option>
+            <option key={value} value={value}>
+              {t(`status.${value}`)}
+            </option>
           ))}
         </select>
       </label>
       <label className="space-y-1">
-        <span className="block text-neutral-500">Score</span>
+        <span className="block text-neutral-500">{t("entry.score")}</span>
         <input
           type="number"
           min={0}
@@ -78,7 +82,7 @@ function EntryControls({ entry }: { entry: EntryFields }) {
       {derived ? (
         <p className="space-y-1 text-neutral-500">
           <span className="block">
-            {entry.progress} episode{entry.progress === 1 ? "" : "s"} watched
+            {t("entry.episodesWatched", { count: entry.progress })}
           </span>
           <span className="block">
             {entry.startDate ? toDateInput(entry.startDate) : "…"} →{" "}
@@ -88,7 +92,7 @@ function EntryControls({ entry }: { entry: EntryFields }) {
       ) : (
         <>
           <label className="space-y-1">
-            <span className="block text-neutral-500">Started</span>
+            <span className="block text-neutral-500">{t("entry.started")}</span>
             <input
               type="date"
               value={toDateInput(entry.startDate)}
@@ -99,7 +103,9 @@ function EntryControls({ entry }: { entry: EntryFields }) {
             />
           </label>
           <label className="space-y-1">
-            <span className="block text-neutral-500">Finished</span>
+            <span className="block text-neutral-500">
+              {t("entry.finished")}
+            </span>
             <input
               type="date"
               value={toDateInput(entry.endDate)}
@@ -119,14 +125,14 @@ function EntryControls({ entry }: { entry: EntryFields }) {
             disabled={remove.isPending}
             className={`${fieldClass} text-red-600`}
           >
-            Confirm delete
+            {t("entry.confirmDelete")}
           </button>
           <button
             type="button"
             onClick={() => setConfirmingDelete(false)}
             className={fieldClass}
           >
-            Cancel
+            {t("entry.cancel")}
           </button>
         </span>
       ) : (
@@ -135,7 +141,7 @@ function EntryControls({ entry }: { entry: EntryFields }) {
           onClick={() => setConfirmingDelete(true)}
           className={fieldClass}
         >
-          Delete
+          {t("entry.delete")}
         </button>
       )}
       {error && (

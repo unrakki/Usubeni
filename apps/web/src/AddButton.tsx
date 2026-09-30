@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { statusesFor } from "@usubeni/shared";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api, errorMessage, type Status, unwrap } from "./lib/api.ts";
 import { fieldClass } from "./lib/ui.ts";
 
@@ -10,6 +11,7 @@ type Target =
 
 // Adds a movie, show or season to the list with the chosen status.
 function AddButton(target: Target) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [status, setStatus] = useState<Status>("Planning");
   const add = useMutation({
@@ -24,11 +26,13 @@ function AddButton(target: Target) {
       <select
         value={status}
         onChange={(event) => setStatus(event.target.value as Status)}
-        aria-label="Status"
+        aria-label={t("common.status")}
         className={fieldClass}
       >
         {statusesFor(target.mediaType).map((value) => (
-          <option key={value}>{value}</option>
+          <option key={value} value={value}>
+            {t(`status.${value}`)}
+          </option>
         ))}
       </select>
       <button
@@ -37,7 +41,7 @@ function AddButton(target: Target) {
         disabled={add.isPending}
         className={`${fieldClass} disabled:opacity-50`}
       >
-        Add
+        {t("entry.add")}
       </button>
       {add.isError && (
         <p role="alert" className="w-full text-red-600">

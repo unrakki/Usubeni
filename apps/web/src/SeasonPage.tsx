@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import AddButton from "./AddButton.tsx";
 import EntryControls from "./EntryControls.tsx";
 import { api, errorMessage, toDateInput, unwrap } from "./lib/api.ts";
 import { fieldClass } from "./lib/ui.ts";
 
 function SeasonPage() {
+  const { t } = useTranslation();
   const { mediaId, seasonNumber } = useParams({
     from: "/tv/$mediaId/season/$seasonNumber",
   });
@@ -31,7 +33,7 @@ function SeasonPage() {
   const busy = watch.isPending || unwatch.isPending;
   const error = watch.error ?? unwatch.error;
 
-  if (season.isPending) return <p>Loading…</p>;
+  if (season.isPending) return <p>{t("common.loading")}</p>;
   if (season.isError) {
     return (
       <p role="alert" className="text-red-600">
@@ -89,7 +91,9 @@ function SeasonPage() {
                     ? unwatch.mutate(episode.episodeNumber)
                     : watch.mutate(episode.episodeNumber)
                 }
-                aria-label={`Watched episode ${episode.episodeNumber}`}
+                aria-label={t("season.watchedEpisode", {
+                  number: episode.episodeNumber,
+                })}
               />
               <span className="w-8 text-neutral-500">
                 {episode.episodeNumber}
@@ -98,13 +102,17 @@ function SeasonPage() {
               <span className="text-neutral-500">
                 {episode.aired
                   ? episode.airDate
-                  : `Airs ${episode.airDate ?? "later"}`}
+                  : episode.airDate
+                    ? t("season.airs", { date: episode.airDate })
+                    : t("season.airsLater")}
               </span>
               {watched && (
                 <span className="text-neutral-500">
                   {episode.viewings.length > 1 &&
-                    `×${episode.viewings.length} · `}
-                  {last?.endDate ? toDateInput(last.endDate) : "date unknown"}
+                    `${t("season.viewings", { count: episode.viewings.length })} · `}
+                  {last?.endDate
+                    ? toDateInput(last.endDate)
+                    : t("season.dateUnknown")}
                 </span>
               )}
               {watched && (
@@ -114,7 +122,7 @@ function SeasonPage() {
                   disabled={busy}
                   className={fieldClass}
                 >
-                  Rewatch
+                  {t("season.rewatch")}
                 </button>
               )}
             </li>

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import type { FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import AddButton from "./AddButton.tsx";
 import Poster from "./Poster.tsx";
 import TypeTabs from "./TypeTabs.tsx";
@@ -8,9 +9,10 @@ import { api, errorMessage, unwrap } from "./lib/api.ts";
 import { fieldClass } from "./lib/ui.ts";
 
 function Search() {
+  const { t } = useTranslation();
   const { type, q } = useSearch({ from: "/search" });
   const navigate = useNavigate({ from: "/search" });
-  const label = type === "movie" ? "Search movies" : "Search TV shows";
+  const label = t(`search.placeholder.${type}`);
 
   const results = useQuery({
     queryKey: ["search", type, q],
@@ -42,17 +44,19 @@ function Search() {
           className={`${fieldClass} flex-1`}
         />
         <button type="submit" className={fieldClass}>
-          Search
+          {t("search.submit")}
         </button>
       </form>
 
-      {results.isFetching && <p>Searching…</p>}
+      {results.isFetching && <p>{t("search.searching")}</p>}
       {results.isError && (
         <p role="alert" className="text-red-600">
-          Search failed: {errorMessage(results.error)}
+          {t("search.failed", { message: errorMessage(results.error) })}
         </p>
       )}
-      {results.data && results.data.results.length === 0 && <p>No results.</p>}
+      {results.data && results.data.results.length === 0 && (
+        <p>{t("search.noResults")}</p>
+      )}
 
       <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-6">
         {results.data?.results.map((result) => (
@@ -75,7 +79,7 @@ function Search() {
               )}
             </p>
             {result.tracked ? (
-              <p className="text-sm text-neutral-500">In your list</p>
+              <p className="text-sm text-neutral-500">{t("search.inList")}</p>
             ) : (
               <AddButton mediaType={type} mediaId={result.mediaId} />
             )}
