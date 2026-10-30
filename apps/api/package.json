@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@sinclair/typebox": "0.34.52",
-    "better-auth": "1.7.6",
+    "better-auth": "1.7.14",
     "bullmq": "6.3.10",
     "drizzle-orm": "0.45.3",
     "drizzle-typebox": "0.3.3",
